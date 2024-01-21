@@ -1,0 +1,14 @@
+{
+  /* Run the nestjs application in debug mode 
+  (npm run dev), then start the debugger and it will be attached  */
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Attach",
+      "port": 9229,
+      "request": "attach",
+      "skipFiles": ["<node_internals>/**"],
+      "type": "node"
+    }
+  ]
+}
