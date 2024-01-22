@@ -3,6 +3,9 @@ import { graphqlHTTP } from 'express-graphql';
 import { buildSchema } from 'graphql';
 import cors from 'cors';
 import { MongoClient } from 'mongodb';
+import { productEntities } from './gql/product/product.entities';
+import { producerEntities } from './gql/producer/producer.entities';
+import { baseEntities } from './gql/base.entities';
 
 // Initialize the Express app
 const app = express();
@@ -19,15 +22,21 @@ async function main() {
 
         // Define a schema
         const schema = buildSchema(`
-            type Query {
-                hello: String
-            }
+        ${baseEntities}
+        ${productEntities}
+        ${producerEntities}
+
+        type Query {
+            test(_id: String!): Product
+        } 
         `);
 
         // Root provides a resolver function for each API endpoint
         const root = {
-            hello: () => {
-                return 'Hello world!';
+            async test({ _id }: { _id: string }) {
+                console.log('test: ' + _id);
+                // Fetch a single product by its _id from your database
+                return /* IMPLEMENT THIS */
             },
         };
 
