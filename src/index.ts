@@ -2,7 +2,7 @@ import express from 'express';
 import { graphqlHTTP } from 'express-graphql';
 import { buildSchema } from 'graphql';
 import cors from 'cors';
-import { MongoClient } from 'mongodb';
+import { MongoClient, ObjectId } from 'mongodb';
 import { productEntities } from './gql/product/product.entities';
 import { producerEntities } from './gql/producer/producer.entities';
 import { baseEntities } from './gql/base.entities';
@@ -15,10 +15,15 @@ app.use(cors());
 const url = 'mongodb://root:secret@localhost:27018/frDb';
 const client = new MongoClient(url);
 
+
 async function main() {
     try {
         await client.connect();
         console.log("Connected to MongoDB");
+
+        const db = client.db('frDb');
+        const productsCollection = db.collection('products');
+        const producersCollection = db.collection('producers');
 
         // Define a schema
         const schema = buildSchema(`
@@ -27,16 +32,21 @@ async function main() {
         ${producerEntities}
 
         type Query {
-            test(_id: String!): Product
+            product(_id: String!): Product
         } 
         `);
 
         // Root provides a resolver function for each API endpoint
         const root = {
-            async test({ _id }: { _id: string }) {
-                console.log('test: ' + _id);
-                // Fetch a single product by its _id from your database
-                return /* IMPLEMENT THIS */
+            // Fetch a single product by its _id from your database
+            async product({ _id }: { _id: string }) {
+                const product = await productsCollection.findOne({ _id: new ObjectId(_id) });
+
+                if (!product) {
+                    throw new Error('Product not found');
+                }
+
+                return product;
             },
         };
 
