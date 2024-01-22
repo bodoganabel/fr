@@ -6,7 +6,7 @@ Breakdown of the full task
 * ✅ [FR-2]: Create mongodb dev instance & connect
 * ✅ [[FR-3]: Create product entities
 * ✅ [[FR-4]: Query product by _id
-* [FR-5]: Query product by producer _id
+* ✅ [FR-5]: Query product by producer _id
 * [FR-6]: Mutation - Create multiple products
 * [FR-7]: Mutation - Update single products
 * [FR-8]: Mutation - Delete multiple products
