@@ -1,9 +1,9 @@
 # Tasks
 Breakdown of the full task
 
-* [FR-0]: Initialize repo, setting up tasks
-* [FR-1]: Run express, graphql server
-* [FR-2]: Create mongodb dev instance
+* ✅ [FR-0]: Define subtasks
+* ✅ [FR-1]: Initialize repo, run express & graphql server
+* ✅ [FR-2]: Create mongodb dev instance & connect
 * [FR-3]: Create product entities
 * [FR-4]: Query product by _id
 * [FR-5]: Query product by producer _id
