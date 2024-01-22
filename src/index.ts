@@ -2,10 +2,12 @@ import express from 'express';
 import { graphqlHTTP } from 'express-graphql';
 import { buildSchema } from 'graphql';
 import cors from 'cors';
-import { MongoClient } from 'mongodb';
+import { MongoClient, ObjectId } from 'mongodb';
 import { productEntities } from './gql/product/product.entities';
 import { producerEntities } from './gql/producer/producer.entities';
 import { baseEntities } from './gql/base.entities';
+import { productQueries } from './gql/product/product.queries';
+import { productResolvers } from './gql/product/product.resolvers';
 
 // Initialize the Express app
 const app = express();
@@ -15,34 +17,35 @@ app.use(cors());
 const url = 'mongodb://root:secret@localhost:27018/frDb';
 const client = new MongoClient(url);
 
+
 async function main() {
     try {
         await client.connect();
         console.log("Connected to MongoDB");
 
-        // Define a schema
+        const db = client.db('frDb');
+        const productsCollection = db.collection('products');
+        const producersCollection = db.collection('producers');
+
+        // Schema
         const schema = buildSchema(`
         ${baseEntities}
         ${productEntities}
         ${producerEntities}
 
-        type Query {
-            test(_id: String!): Product
-        } 
+        ${productQueries} 
+        
         `);
 
-        // Root provides a resolver function for each API endpoint
-        const root = {
-            async test({ _id }: { _id: string }) {
-                console.log('test: ' + _id);
-                // Fetch a single product by its _id from your database
-                return /* IMPLEMENT THIS */
-            },
+
+
+        const resolvers = {
+            ...productResolvers(productsCollection),
         };
 
         app.use('/graphql', graphqlHTTP({
             schema: schema,
-            rootValue: root,
+            rootValue: resolvers,
             graphiql: true,
         }));
 

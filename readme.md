@@ -4,8 +4,8 @@ Breakdown of the full task
 * ✅ [FR-0]: Define subtasks
 * ✅ [FR-1]: Initialize repo, run express & graphql server
 * ✅ [FR-2]: Create mongodb dev instance & connect
-* [FR-3]: Create product entities
-* [FR-4]: Query product by _id
+* ✅ [[FR-3]: Create product entities
+* ✅ [[FR-4]: Query product by _id
 * [FR-5]: Query product by producer _id
 * [FR-6]: Mutation - Create multiple products
 * [FR-7]: Mutation - Update single products
