@@ -9,7 +9,7 @@ const app = express();
 app.use(cors());
 
 // Connect to MongoDB
-const url = 'connection-string';
+const url = 'mongodb://root:secret@localhost:27018/frDb';
 const client = new MongoClient(url);
 
 async function main() {
