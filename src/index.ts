@@ -6,6 +6,8 @@ import { MongoClient, ObjectId } from 'mongodb';
 import { productEntities } from './gql/product/product.entities';
 import { producerEntities } from './gql/producer/producer.entities';
 import { baseEntities } from './gql/base.entities';
+import { productQueries } from './gql/product/product.queries';
+import { productResolvers } from './gql/product/product.resolvers';
 
 // Initialize the Express app
 const app = express();
@@ -25,34 +27,25 @@ async function main() {
         const productsCollection = db.collection('products');
         const producersCollection = db.collection('producers');
 
-        // Define a schema
+        // Schema
         const schema = buildSchema(`
         ${baseEntities}
         ${productEntities}
         ${producerEntities}
 
-        type Query {
-            product(_id: String!): Product
-        } 
+        ${productQueries} 
+        
         `);
 
-        // Root provides a resolver function for each API endpoint
-        const root = {
-            // Fetch a single product by its _id from your database
-            async product({ _id }: { _id: string }) {
-                const product = await productsCollection.findOne({ _id: new ObjectId(_id) });
 
-                if (!product) {
-                    throw new Error('Product not found');
-                }
 
-                return product;
-            },
+        const resolvers = {
+            ...productResolvers(productsCollection),
         };
 
         app.use('/graphql', graphqlHTTP({
             schema: schema,
-            rootValue: root,
+            rootValue: resolvers,
             graphiql: true,
         }));
 
