@@ -8,65 +8,12 @@ Breakdown of the full task
 * ✅ [[FR-4]: Query product by _id
 * ✅ [FR-5]: Query product by producer _id
 * ✅ [FR-6]: Mutation - Create multiple products
-* [FR-10]: Fix product's producer query
+* ✅ [FR-10]: Fix product's producer query
 * [FR-7]: Mutation - Update single products
 * [FR-8]: Mutation - Delete multiple products
 * [FR-9]: Mutation - Synchronize multiple products
 ** - fetching csv
 ** - upserting in batch
-
-
-Example queries:
-`query Product($_id: String!) {
-  product(_id: $_id) {
-    vintage
-  }
-}
-
-{
-    "_id": "65afa78e6f02c6d10a22cdaa"
-}
-
-mutation InsertMultiple($products:[ProductInput!]!) {
-  createMultipleProducts(products:$products) {
-    _id
-		vintage
-    name
-		producerId
-  }
-}
-
-{
-	"products": [
-    {
-      "producerId": "65afa1e8d563d66ff2446d7e",
-      "name":"WinePro MKII",
-      "vintage":"Yes"
-    },
-    {
-      "producerId": "65afa1e8d563d66ff2446d7e",
-      "name":"WinePro Extra",
-      "vintage":"No"
-    }
-  ]
-}
-
-`
-Example data:
-`
-producers:
-[{
-  "_id": {
-    "$oid": "65afa1e8d563d66ff2446d7e"
-  },
-  "name": "Pro manufact BT",
-  "country": "Hungary",
-  "region": "Eastern EU"
-}]
-
-products:
-
-`
 
 
 
