@@ -1,5 +1,5 @@
 import { ObjectId } from "mongodb";
-import { IProduct, IProductInput } from "./product.types";
+import { IProduct, IProductInput, IUpdateProductInput } from "./product.types";
 import { getProducersCollection, getProductsCollection } from "../../database/database";
 
 
@@ -66,6 +66,36 @@ export const productResolvers = {
             } catch (error: any) {
                 throw new Error('Error creating multiple products: ' + error.message);
             }
-        }
+        },
+        async updateProduct(parent: any, args: { product: IUpdateProductInput }, context: any, info: any) {
+            const { _id, ...updateData } = args.product;
+
+            // Check if the product exists
+            const productExists = await getProductsCollection().findOne({ _id: new ObjectId(_id) });
+            if (!productExists) {
+                throw new Error('Product not found');
+            }
+
+            // Check if producerId is provided and valid
+            if (updateData.producerId) {
+                const producerExists = await getProducersCollection().findOne({ _id: new ObjectId(updateData.producerId) });
+                if (!producerExists) {
+                    throw new Error('Producer not found for the given producerId');
+                }
+            }
+
+            // Update the product
+            const result = await getProductsCollection().updateOne(
+                { _id: new ObjectId(_id) },
+                { $set: updateData }
+            );
+
+            // Return the updated product
+            if (result.modifiedCount === 0) {
+                throw new Error('Product update failed');
+            }
+
+            return await getProductsCollection().findOne({ _id: new ObjectId(_id) });
+        },
     }
 }

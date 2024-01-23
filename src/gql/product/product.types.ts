@@ -16,6 +16,13 @@ type Product {
         producerId: String!
     }
 
+    input UpdateProductInput {
+    _id: String!
+    vintage: String
+    name: String
+    producerId: String
+}
+
     type Query {
         product(_id: String!): Product
         productsByProducer(_id: String!): [Product!]!
@@ -23,6 +30,7 @@ type Product {
 
     type Mutation {
         createMultipleProducts(products: [ProductInput!]!): [Product!]!
+        updateProduct(product: UpdateProductInput!): Product!
     }
 `;
 
@@ -39,4 +47,8 @@ export interface IProductInput {
     vintage: string,
     name: string,
     producerId: string,
+}
+
+export interface IUpdateProductInput extends IProductInput {
+    _id: string
 }

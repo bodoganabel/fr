@@ -16,59 +16,6 @@ Breakdown of the full task
 ** - upserting in batch
 
 
-Example queries:
-`query Product($_id: String!) {
-  product(_id: $_id) {
-    vintage
-  }
-}
-
-{
-    "_id": "65afa78e6f02c6d10a22cdaa"
-}
-
-mutation InsertMultiple($products:[ProductInput!]!) {
-  createMultipleProducts(products:$products) {
-    _id
-		vintage
-    name
-		producerId
-  }
-}
-
-{
-	"products": [
-    {
-      "producerId": "65afa1e8d563d66ff2446d7e",
-      "name":"WinePro MKII",
-      "vintage":"Yes"
-    },
-    {
-      "producerId": "65afa1e8d563d66ff2446d7e",
-      "name":"WinePro Extra",
-      "vintage":"No"
-    }
-  ]
-}
-
-`
-Example data:
-`
-producers:
-[{
-  "_id": {
-    "$oid": "65afa1e8d563d66ff2446d7e"
-  },
-  "name": "Pro manufact BT",
-  "country": "Hungary",
-  "region": "Eastern EU"
-}]
-
-products:
-
-`
-
-
 
 
 # Simple Product API 
