@@ -8,6 +8,7 @@ import { producerEntities } from './gql/producer/producer.entities';
 import { baseEntities } from './gql/base.entities';
 import { productQueries } from './gql/product/product.queries';
 import { productResolvers } from './gql/product/product.resolvers';
+import { productMutations } from './gql/product/product.mutations';
 
 // Initialize the Express app
 const app = express();
@@ -34,13 +35,14 @@ async function main() {
         ${producerEntities}
 
         ${productQueries} 
+        ${productMutations} 
         
         `);
 
 
 
         const resolvers = {
-            ...productResolvers(productsCollection),
+            ...productResolvers(productsCollection, producersCollection),
         };
 
         app.use('/graphql', graphqlHTTP({
