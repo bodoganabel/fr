@@ -25,13 +25,7 @@ export const productResolvers = {
         // Fetch a single product by its producer's _id from your database
         async productsByProducer(parent: any, args: { _id: string }) {
             const { _id } = args;
-
-            console.log('_id:');
-            console.log(_id);
-
             const products = await getProductsCollection().find({ producerId: _id }).toArray();
-            console.log('products:');
-            console.log(products);
             if (!products) {
                 throw new Error('Product not found');
             }
@@ -41,9 +35,6 @@ export const productResolvers = {
     Mutation: {
         async createMultipleProducts(parent: any, args: { products: IProductInput[] }, context: any, info: any) {
             const products = args.products;
-
-            console.log('products:');
-            console.log(products);
             try {
                 const validProducts = [];
                 const invalidProducts = [];

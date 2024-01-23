@@ -8,7 +8,7 @@ Breakdown of the full task
 * ✅ [[FR-4]: Query product by _id
 * ✅ [FR-5]: Query product by producer _id
 * ✅ [FR-6]: Mutation - Create multiple products
-* [FR-10]: Fix product's producer query
+* ✅ [FR-10]: Fix product's producer query
 * [FR-7]: Mutation - Update single products
 * [FR-8]: Mutation - Delete multiple products
 * [FR-9]: Mutation - Synchronize multiple products
