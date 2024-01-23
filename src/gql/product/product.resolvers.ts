@@ -97,5 +97,24 @@ export const productResolvers = {
 
             return await getProductsCollection().findOne({ _id: new ObjectId(_id) });
         },
+
+        async deleteMultipleProducts(parent: any, args: { _ids: string[] }) {
+            const { _ids } = args;
+            const objectIds = _ids.map(id => new ObjectId(id)); // Convert string IDs to ObjectId
+            try {
+                // Delete the products with the specified _ids
+                const result = await getProductsCollection().deleteMany({
+                    _id: { $in: objectIds }
+                });
+
+                if (result.deletedCount === 0) {
+                    throw new Error('No products found with the specified IDs');
+                }
+
+                return _ids; // Return the array of deleted product _id's
+            } catch (error: any) {
+                throw new Error('Error deleting multiple products: ' + error.message);
+            }
+        }
     }
 }

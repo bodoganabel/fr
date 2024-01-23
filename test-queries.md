@@ -53,6 +53,15 @@ mutation UpdateOne($product:UpdateProductInput!) {
 }}
 
 
+mutation DeleteMultiple($_ids:[String!]!) {
+  deleteMultipleProducts(_ids:$_ids)
+}
+
+{
+  "_ids": ["65b01762d86e46a2f67bd870","65b01762d86e46a2f67bd871"]
+}
+
+
 
 `
 Example data:
