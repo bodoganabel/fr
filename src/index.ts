@@ -1,55 +1,60 @@
 import express from 'express';
 import { graphqlHTTP } from 'express-graphql';
-import { buildSchema } from 'graphql';
 import cors from 'cors';
-import { MongoClient, ObjectId } from 'mongodb';
-import { productEntities } from './gql/product/product.entities';
-import { producerEntities } from './gql/producer/producer.entities';
-import { baseEntities } from './gql/base.entities';
-import { productQueries } from './gql/product/product.queries';
-import { productResolvers } from './gql/product/product.resolvers';
-import { productMutations } from './gql/product/product.mutations';
+
+import { connectToDB } from './database/database';
+import { schema } from './gql';
 
 // Initialize the Express app
 const app = express();
 app.use(cors());
 
-// Connect to MongoDB
-const url = 'mongodb://root:secret@localhost:27018/frDb';
-const client = new MongoClient(url);
 
 
 async function main() {
     try {
-        await client.connect();
-        console.log("Connected to MongoDB");
 
-        const db = client.db('frDb');
-        const productsCollection = db.collection('products');
-        const producersCollection = db.collection('producers');
+        // Connect to MongoDB
+        await connectToDB();
 
-        // Schema
-        const schema = buildSchema(`
-        ${baseEntities}
-        ${productEntities}
-        ${producerEntities}
+        // https://github.com/graphql/express-graphql
+        // If no context is created here, the request object is passed instead
+        // Todo: add type to request
+        app.use('/graphql', graphqlHTTP((req: any) => ({
+            schema,
+            graphiql: {
+                headerEditorEnabled: true
+            },
+            context: {
+                isAuth: req.isAuth,
+                user: req.user,
+                error: req.error
+                // loaders: {
+                //     rolesLoader: rolesDataLoader
+                // }
+            },
+            customFormatErrorFn: (err: any) => {
+                if (!err.originalError) {
+                    return err
+                }
+                /* 
+                    You can add the following to any resolver
+                    const error = new Error('My message')
+                    error.data = [...]
+                    error.code = 001
+                */
+                const message = err.message || 'An error occured.'
+                const code = err.originalError.code
+                const data = err.originalError.data
+                return {
+                    // ...err, 
+                    message,
+                    code,
+                    data
+                }
+            }
+        })))
 
-        ${productQueries} 
-        ${productMutations} 
-        
-        `);
-
-
-
-        const resolvers = {
-            ...productResolvers(productsCollection, producersCollection),
-        };
-
-        app.use('/graphql', graphqlHTTP({
-            schema: schema,
-            rootValue: resolvers,
-            graphiql: true,
-        }));
 
         app.listen(4000, () => console.log('Running a GraphQL API server at http://localhost:4000/graphql'));
     } catch (e) {

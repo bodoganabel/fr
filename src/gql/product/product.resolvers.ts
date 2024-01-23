@@ -1,11 +1,21 @@
-import { Collection, ObjectId } from "mongodb";
-import { IProductInput } from "./product.entities";
+import { ObjectId } from "mongodb";
+import { IProduct, IProductInput } from "./product.types";
+import { getProducersCollection, getProductsCollection } from "../../database/database";
 
-export function productResolvers(productsCollection: Collection, producerCollection: Collection) {
-    return {
+
+export const productResolvers = {
+
+    Product: {
+        async producer(product: IProduct, args: any) {
+            return await getProducersCollection().findOne({ _id: new ObjectId(product.producerId) });
+        }
+    },
+
+    Query: {
         // Fetch a single product by its _id from your database
-        async product({ _id }: { _id: string }) {
-            const product = await productsCollection.findOne({ _id: new ObjectId(_id) });
+        async product(parent: any, args: { _id: string }) {
+            const { _id } = args;
+            const product = await getProductsCollection().findOne({ _id: new ObjectId(_id) });
             if (!product) {
                 throw new Error('Product not found');
             }
@@ -13,16 +23,24 @@ export function productResolvers(productsCollection: Collection, producerCollect
         },
 
         // Fetch a single product by its producer's _id from your database
-        async productByProducer({ _id }: { _id: string }) {
-            const product = await productsCollection.findOne({ producerId: new ObjectId(_id) });
-            if (!product) {
+        async productsByProducer(parent: any, args: { _id: string }) {
+            const { _id } = args;
+
+            console.log('_id:');
+            console.log(_id);
+
+            const products = await getProductsCollection().find({ producerId: _id }).toArray();
+            console.log('products:');
+            console.log(products);
+            if (!products) {
                 throw new Error('Product not found');
             }
-            return product;
+            return products;
         },
-
-        async createMultipleProducts(productsInput: { products: IProductInput[] }) {
-            const products = productsInput.products;
+    },
+    Mutation: {
+        async createMultipleProducts(parent: any, args: { products: IProductInput[] }, context: any, info: any) {
+            const products = args.products;
 
             console.log('products:');
             console.log(products);
@@ -32,7 +50,7 @@ export function productResolvers(productsCollection: Collection, producerCollect
 
                 // Check if producerId exists for each product
                 for (const product of products) {
-                    const producerExists = await producerCollection.findOne({ _id: new ObjectId(product.producerId) });
+                    const producerExists = await getProducersCollection().findOne({ _id: new ObjectId(product.producerId) });
                     if (producerExists) {
                         validProducts.push(product);
                     } else {
@@ -46,10 +64,10 @@ export function productResolvers(productsCollection: Collection, producerCollect
                 }
 
                 // Insert only valid products
-                const result = await productsCollection.insertMany(validProducts);
+                const result = await getProductsCollection().insertMany(validProducts);
 
                 // Fetch the inserted documents using the insertedIds
-                const insertedProducts = await productsCollection.find({
+                const insertedProducts = await getProductsCollection().find({
                     _id: { $in: Object.values(result.insertedIds) }
                 }).toArray();
 
