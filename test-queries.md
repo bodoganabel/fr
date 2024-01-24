@@ -24,12 +24,12 @@ mutation InsertMultiple($products:[ProductInput!]!) {
     {
       "producerId": "65afa1e8d563d66ff2446d7e",
       "name":"WinePro MKII",
-      "vintage":"Yes"
+      "vintage":"1997"
     },
     {
       "producerId": "65afa1e8d563d66ff2446d7e",
       "name":"WinePro Extra",
-      "vintage":"No"
+      "vintage":"1798"
     }
   ]
 }
