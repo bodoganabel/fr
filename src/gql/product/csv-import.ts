@@ -18,54 +18,59 @@ piped read stream does not unpause
 */
 
 export async function importProductsFromCSV(csvFilePath: string = mock_path) {
-    const stream = createReadStream(csvFilePath);
+    const stream = createReadStream(csvFilePath).pipe(csvParser());
     let batch: IProductInput[] = [];
     const errors: unknown[] = [];
 
-    let isBatchProcessing = false; // Flag to check if a batch is currently being processed
-    let processedCount = 0; // Make this a scope-wide variable
+    let isBatchProcessing = false;
+    let processedCount = 0;
 
-    stream.pipe(csvParser())
-        .on('data', async (data) => {
-            stream.pause(); // Always pause the stream when new data arrives
+    stream.on('readable', async () => {
+        if (isBatchProcessing) {
+            // If a batch is currently being processed, don't read new data.
+            return;
+        }
+
+        let data;
+        while (null !== (data = stream.read()) && !isBatchProcessing) {
             const product = mapDataToProduct(data);
             batch.push(product);
 
-            if (batch.length >= BATCH_SIZE && !isBatchProcessing) {
-                console.log('batch:');
-                console.log(batch);
-                isBatchProcessing = true; // Set the flag
+            if (batch.length >= BATCH_SIZE) {
+                isBatchProcessing = true;
                 try {
-                    await processBatch(batch, stream, errors, () => {
+                    await processBatch(batch, errors, () => {
                         processedCount += batch.length;
-                        console.log(`Batch processed. Total product upserted: ${processedCount}`)
+                        process.stdout.write(`upserted: ${processedCount}\r`);
                     });
                     batch.length = 0; // Clear the batch
-                    console.log(`Batch processed. Current total processed count: ${processedCount}`);
                 } catch (error) {
                     console.error('Error during batch processing:', error);
-                    errors.push(error); // Store the error
+                    errors.push(error);
                 }
-                isBatchProcessing = false; // Reset the flag
-                stream.resume(); // Resume the stream after processing
-            } else {
-                stream.resume(); // If the batch size hasn't been reached, resume the stream
+                isBatchProcessing = false;
             }
-        })
-        .on('end', async () => {
-            if (batch.length > 0) {
-                try {
-                    await upsertBatch(batch);
-                    processedCount += batch.length; // Update the processed count
-                } catch (error) {
-                    console.error('Error during the final batch upsert:', error);
-                }
+        }
+    });
+
+    stream.on('end', async () => {
+        // Handle any remaining products
+        if (batch.length > 0) {
+            try {
+                await processBatch(batch, errors, () => {
+                    processedCount += batch.length;
+                    console.log(`Final batch processed. Total products processed: ${processedCount}`);
+                });
+            } catch (error) {
+                console.error('Error during the final batch processing:', error);
             }
-            console.log(`Import completed. Total products processed: ${processedCount}`);
-        })
-        .on('error', (error) => {
-            console.error('Stream error:', error);
-        });
+        }
+        console.log(`Import completed. Total products processed: ${processedCount}`);
+    });
+
+    stream.on('error', (error) => {
+        console.error('Stream error:', error);
+    });
 }
 
 
@@ -77,7 +82,7 @@ function mapDataToProduct(data: { [key: string]: any }): IProductInput {
     };
 }
 
-async function processBatch(batch: IProductInput[], stream: ReadStream, errors: unknown[], successCallback: () => void) {
+async function processBatch(batch: IProductInput[], errors: unknown[], successCallback: () => void) {
     try {
         await upsertBatch(batch);
         successCallback();
