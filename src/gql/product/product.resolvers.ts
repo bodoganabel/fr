@@ -1,6 +1,7 @@
 import { ObjectId } from "mongodb";
 import { IProduct, IProductInput, IUpdateProductInput } from "./product.types";
 import { getProducersCollection, getProductsCollection } from "../../database/database";
+import { importProductsFromCSV } from "./csv-import";
 
 
 export const productResolvers = {
@@ -115,6 +116,16 @@ export const productResolvers = {
             } catch (error: any) {
                 throw new Error('Error deleting multiple products: ' + error.message);
             }
-        }
+        },
+
+        async importProductsFromCSV(parent: any, args: any) {
+            try {
+                importProductsFromCSV(); // Start the import process
+                return true; // Immediately return true
+            } catch (error: any) {
+                console.error('Error starting CSV import:', error.message);
+                throw new Error('Failed to start CSV import');
+            }
+        },
     }
 }

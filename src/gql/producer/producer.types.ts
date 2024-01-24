@@ -1,4 +1,6 @@
-export const producerTypes = `
+import gql from "graphql-tag";
+
+export const producerTypes = gql`
     type Producer {
         _id: String!
         name: String!

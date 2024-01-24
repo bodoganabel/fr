@@ -32,6 +32,7 @@ type Product {
         createMultipleProducts(products: [ProductInput!]!): [Product!]!
         updateProduct(product: UpdateProductInput!): Product!
         deleteMultipleProducts(_ids: [String!]!): [String!]!
+        importProductsFromCSV: Boolean!
     }
 `;
 
