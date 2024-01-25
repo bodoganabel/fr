@@ -1,19 +1,33 @@
+# Quickstart
+* `docker-compose build --no-cache` 
+* `docker-compose up` 
+WARNING! The mongo-init script will delete existing data, and inserts a mock producer to be able to test the queries/mutations.
+POST http://localhost:4000/seed
+* Access graphql endpoint:
+ from http://localhost:4000/graphql
+You can use queries from test-queries.md
+
+* Docker debug commands: 
+`docker logs fr-api`
+`docker exec -it fr-api sh`
+
 # Tasks
 Breakdown of the full task
 
 * ✅ [FR-0]: Define subtasks
 * ✅ [FR-1]: Initialize repo, run express & graphql server
 * ✅ [FR-2]: Create mongodb dev instance & connect
-* ✅ [[FR-3]: Create product entities
-* ✅ [[FR-4]: Query product by _id
+* ✅ [FR-3]: Create product entities
+* ✅ [FR-4]: Query product by _id
 * ✅ [FR-5]: Query product by producer _id
 * ✅ [FR-6]: Mutation - Create multiple products
 * ✅ [FR-10]: Fix product's producer query
-* [FR-7]: Mutation - Update single products
-* [FR-8]: Mutation - Delete multiple products
-* [FR-9]: Mutation - Synchronize multiple products
+* ✅ [FR-7]: Mutation - Update single products
+* ✅ [FR-8]: Mutation - Delete multiple products
+* ✅ [FR-9]: Mutation - Synchronize multiple products
 ** - fetching csv
 ** - upserting in batch
+* ✅ [FR-11]: Dockerize
 
 
 

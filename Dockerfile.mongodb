@@ -1,0 +1,16 @@
+# Use the official MongoDB Docker image
+FROM mongo:latest
+
+# Define the script directory inside docker image
+WORKDIR /docker-entrypoint-initdb.d
+
+# Install MongoDB Shell
+RUN apt-get update && apt-get install -y mongodb-org-shell
+
+# Copy seed script: (Assuming you have a init-mongo.js script in the same directory as your Dockerfile)
+COPY init-mongo.js /docker-entrypoint-initdb.d/
+
+# Expose port 27017
+EXPOSE 27017
+
+CMD ["mongod"]

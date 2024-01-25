@@ -10,3 +10,13 @@ db.createUser({
 });
 
 db.createCollection('users');
+db.createCollection('products')
+db.createCollection('producers')
+
+
+// Inserting a producer document into the 'producers' collection
+db.producers.insertOne({
+  name: 'Pro manufact BT',
+  country: 'Hungary',
+  region: 'EU'
+});

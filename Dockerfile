@@ -1,17 +1,25 @@
-# Use the official MongoDB Docker image
-FROM mongo:latest
+# Use an official Node runtime as a parent image
+FROM node:18
 
-# Define the script directory inside docker image
-WORKDIR /docker-entrypoint-initdb.d
+# Set the working directory in the container
+WORKDIR /usr/src/app
 
+# Copy the current directory contents into the container at /usr/src/app
+COPY package*.json ./
 
-# Install MongoDB Shell
-RUN apt-get update && apt-get install -y mongodb-org-shell
+# Install any needed packages specified in package.json
+RUN npm install
 
-# Copy seed script: (Assuming you have a init-mongo.js script in the same directory as your Dockerfile)
-COPY init-mongo.js /docker-entrypoint-initdb.d/
+# Bundle the source code inside the Docker image
+COPY . .
 
-# Expose port 27017
-EXPOSE 27017
+RUN ls -la /usr/src/app  # Before build
+# Build the app
+RUN npm run build || cat /usr/src/app/npm-debug.log
+RUN ls -la /usr/src/app/dist  # After build
 
-CMD ["mongod"]
+# Make port 4000 available to the world outside this container
+EXPOSE 4000
+
+# Run npm start when the container launches
+CMD ["npm", "run", "serve"]

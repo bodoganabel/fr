@@ -6,7 +6,7 @@ import { IProduct, IProductInput } from '../product/product.types';
 import path from 'path';
 
 const BATCH_SIZE = 100;
-const mock_path = path.join(__dirname, '../', '../', 'database/all_listings.csv')
+const mock_path = path.join(__dirname, '../', '../', '../', '/data', 'all_listings.csv')
 console.log('mock_path', mock_path);
 
 /* 
